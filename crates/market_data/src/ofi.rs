@@ -1,4 +1,5 @@
-use std::collections::VecDeque;
+extern crate alloc;
+use alloc::collections::VecDeque;
 
 /// Order Flow Imbalance (OFI) Calculator
 /// Measures the net pressure on the order book by tracking changes

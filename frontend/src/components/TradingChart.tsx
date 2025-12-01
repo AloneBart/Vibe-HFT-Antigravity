@@ -103,13 +103,13 @@ export function TradingChart({ data, volumeData }: TradingChartProps) {
 
     useEffect(() => {
         if (candlestickSeriesRef.current && data.length > 0) {
-            candlestickSeriesRef.current.setData(data as any)
+            candlestickSeriesRef.current.setData(data)
         }
     }, [data])
 
     useEffect(() => {
         if (volumeSeriesRef.current && volumeData.length > 0) {
-            volumeSeriesRef.current.setData(volumeData as any)
+            volumeSeriesRef.current.setData(volumeData)
         }
     }, [volumeData])
 

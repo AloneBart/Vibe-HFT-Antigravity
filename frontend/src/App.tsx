@@ -181,7 +181,7 @@ function App() {
       console.log('🔌 Attempting connection to gateway...')
       setStatus('Connecting...')
 
-      const ws = new WebSocket('ws://127.0.0.1:8080')
+      const ws = new WebSocket(import.meta.env.VITE_WS_URL || 'ws://127.0.0.1:8080')
       ws.binaryType = 'arraybuffer'
       wsRef.current = ws
 

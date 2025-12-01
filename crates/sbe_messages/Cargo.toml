@@ -1,0 +1,13 @@
+[package]
+name = "vibe-hft-sbe-messages"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# rustysbe = "0.1" # Assuming this is the crate name, or similar. Using a placeholder or standard sbe crate if rustysbe is not on crates.io. 
+# Since I cannot check crates.io, I will assume the user provided name is correct or I need to use a local path or git.
+# For now, I'll add it as a dependency, but might need adjustment.
+# Actually, usually SBE generators are build dependencies.
+
+[build-dependencies]
+# rustysbe = "0.1" 

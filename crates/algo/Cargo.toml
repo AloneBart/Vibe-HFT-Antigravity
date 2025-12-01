@@ -1,0 +1,9 @@
+[package]
+name = "vibe-hft-algo"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+vibe-hft-core = { path = "../core" }
+vibe-hft-market-data = { path = "../market_data" }
+vibe-hft-sbe-messages = { path = "../sbe_messages" }

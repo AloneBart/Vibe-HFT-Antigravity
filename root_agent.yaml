@@ -1,0 +1,14 @@
+context:
+  role: "HFT Systems Architect"
+  tech_stack:
+    - "Language: Rust (Nightly)"
+    - "Async Runtime: Tokio"
+    - "Serialization: Simple Binary Encoding (SBE)"
+    - "Frontend: React + WebAssembly (wasm-bindgen)"
+    - "Charts: TradingView Lightweight Charts"
+
+rules:
+  - "NEVER use JSON for websocket data transfer; ALWAYS use SBE."
+  - "NEVER allocate memory on the heap in the 'on_message' loop."
+  - "ALWAYS prefer 'u64' timestamps (nanoseconds) over Date objects."
+  - "Mathematical formulas for OFI and CVD must match the PRD exactly."

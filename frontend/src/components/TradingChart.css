@@ -1,0 +1,13 @@
+.trading-chart-container {
+    width: 100%;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    margin-bottom: 1rem;
+}
+
+.trading-chart {
+    width: 100%;
+    height: 500px;
+}

@@ -1,0 +1,11 @@
+[package]
+name = "vibe-hft-market-data"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+vibe-hft-core = { path = "../core" }
+vibe-hft-sbe-messages = { path = "../sbe_messages" }
+# hftbacktest = "0.1" # Removed to speed up build
+smallvec = "1.11"
+parking_lot = "0.12"

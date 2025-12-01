@@ -1,0 +1,29 @@
+   Compiling vibe-hft-sbe-messages v0.1.0 (G:\Mon Drive\00 Projet AntiGravity\01 THF\20251130 APP THF\crates\sbe_messages)
+warning: hard linking files in the incremental compilation cache failed. copying files instead. consider moving the cache directory to a file system which supports hard linking in session dir `\\?\G:\Mon Drive\00 Projet AntiGravity\01 THF\20251130 APP THF\target\debug\incremental\build_script_build-37erly486x4nu\s-hdh7y386ht-07aw93v-working`
+
+warning: unused import: `std::env`
+ --> crates\sbe_messages\build.rs:1:5
+  |
+1 | use std::env;
+  |     ^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `std::path::Path`
+ --> crates\sbe_messages\build.rs:2:5
+  |
+2 | use std::path::Path;
+  |     ^^^^^^^^^^^^^^^
+
+error: linker `link.exe` not found
+  |
+  = note: program not found
+
+note: the msvc targets depend on the msvc linker but `link.exe` was not found
+
+note: please ensure that Visual Studio 2017 or later, or Build Tools for Visual Studio were installed with the Visual C++ option.
+
+note: VS Code is a different product, and is not sufficient.
+
+warning: `vibe-hft-sbe-messages` (build script) generated 3 warnings
+error: could not compile `vibe-hft-sbe-messages` (build script) due to 1 previous error; 3 warnings emitted

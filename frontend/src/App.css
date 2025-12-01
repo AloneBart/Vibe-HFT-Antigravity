@@ -49,6 +49,7 @@ body {
   background-clip: text;
 }
 
+/* HEADER CONTROLS & SIMULATION */
 .header-controls {
   display: flex;
   align-items: center;
@@ -99,6 +100,30 @@ body {
   }
 }
 
+.sim-banner {
+  background: rgba(255, 217, 61, 0.15);
+  border: 1px solid var(--accent-yellow);
+  color: var(--accent-yellow);
+  padding: 1rem 2rem;
+  margin: 1rem 2rem;
+  border-radius: 8px;
+  font-weight: 500;
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* STATUS */
 .status {
   padding: 0.5rem 1.5rem;
   border-radius: 20px;
@@ -139,29 +164,7 @@ body {
   font-weight: 500;
 }
 
-.sim-banner {
-  background: rgba(255, 217, 61, 0.15);
-  border: 1px solid var(--accent-yellow);
-  color: var(--accent-yellow);
-  padding: 1rem 2rem;
-  margin: 1rem 2rem;
-  border-radius: 8px;
-  font-weight: 500;
-  animation: fadeIn 0.5s ease-in;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
+/* MAIN CONTENT */
 .main-content {
   flex: 1;
   padding: 2rem;
@@ -241,7 +244,7 @@ body {
   font-size: 1.1rem;
 }
 
-/* Scrollbar styling */
+/* SCROLLBAR */
 .data-grid::-webkit-scrollbar {
   width: 8px;
 }

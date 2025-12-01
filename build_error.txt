@@ -1,0 +1,66 @@
+warning: unused import: `std::env`
+ --> crates\sbe_messages\build.rs:1:5
+  |
+1 | use std::env;
+  |     ^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `std::path::Path`
+ --> crates\sbe_messages\build.rs:2:5
+  |
+2 | use std::path::Path;
+  |     ^^^^^^^^^^^^^^^
+
+warning: `vibe-hft-sbe-messages` (build script) generated 2 warnings
+    Checking vibe-hft-sbe-messages v0.1.0 (C:\MesProjetsAntigravity\20251130 APP THF\crates\sbe_messages)
+    Checking vibe-hft-market-data v0.1.0 (C:\MesProjetsAntigravity\20251130 APP THF\crates\market_data)
+warning: unused import: `smallvec::SmallVec`
+ --> crates\market_data\src\lib.rs:7:5
+  |
+7 | use smallvec::SmallVec;
+  |     ^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `core::cell::RefCell`
+ --> crates\market_data\src\lib.rs:8:5
+  |
+8 | use core::cell::RefCell;
+  |     ^^^^^^^^^^^^^^^^^^^
+
+warning: `vibe-hft-market-data` (lib) generated 2 warnings (run `cargo fix --lib -p vibe-hft-market-data` to apply 2 suggestions)
+    Checking vibe-hft-strategy v0.1.0 (C:\MesProjetsAntigravity\20251130 APP THF\crates\strategy)
+warning: unused import: `OrderSide`
+ --> crates\strategy\src\lib.rs:1:28
+  |
+1 | use vibe_hft_core::{Order, OrderSide};
+  |                            ^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+error[E0596]: cannot borrow `*order_book` as mutable, as it is behind a `&` reference
+  --> crates\strategy\src\lib.rs:25:24
+   |
+25 |         let best_bid = order_book.best_bid()?;
+   |                        ^^^^^^^^^^ `order_book` is a `&` reference, so the data it refers to cannot be borrowed as mutable
+   |
+help: consider changing this to be a mutable reference in the `impl` method and the `trait` definition
+   |
+24 |     fn on_market_data(&mut self, order_book: &mut OrderBook) -> Option<Vec<Order>> {
+   |                                               +++
+
+error[E0596]: cannot borrow `*order_book` as mutable, as it is behind a `&` reference
+  --> crates\strategy\src\lib.rs:26:24
+   |
+26 |         let best_ask = order_book.best_ask()?;
+   |                        ^^^^^^^^^^ `order_book` is a `&` reference, so the data it refers to cannot be borrowed as mutable
+   |
+help: consider changing this to be a mutable reference in the `impl` method and the `trait` definition
+   |
+24 |     fn on_market_data(&mut self, order_book: &mut OrderBook) -> Option<Vec<Order>> {
+   |                                               +++
+
+For more information about this error, try `rustc --explain E0596`.
+warning: `vibe-hft-strategy` (lib) generated 1 warning
+error: could not compile `vibe-hft-strategy` (lib) due to 2 previous errors; 1 warning emitted

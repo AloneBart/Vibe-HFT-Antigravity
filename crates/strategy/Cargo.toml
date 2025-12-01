@@ -1,0 +1,9 @@
+[package]
+name = "vibe-hft-strategy"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+vibe-hft-core = { path = "../core" }
+vibe-hft-market-data = { path = "../market_data" }
+log = "0.4"

@@ -59,3 +59,28 @@ pub fn decode_market_data(data: &[u8]) -> Result<JsValue, JsValue> {
 
     Ok(serde_wasm_bindgen::to_value(&update)?)
 }
+
+#[wasm_bindgen]
+pub fn calculate_ofi(bid_vol: f64, ask_vol: f64, prev_bid_vol: f64, prev_ask_vol: f64, bid_price: f64, ask_price: f64, prev_bid_price: f64, prev_ask_price: f64) -> f64 {
+    // OFI Calculation Logic
+    // e_n^b (Bid Event)
+    let e_b = if bid_price > prev_bid_price {
+        bid_vol
+    } else if bid_price < prev_bid_price {
+        -prev_bid_vol
+    } else {
+        bid_vol - prev_bid_vol
+    };
+
+    // e_n^a (Ask Event)
+    let e_a = if ask_price > prev_ask_price {
+        -prev_ask_vol
+    } else if ask_price < prev_ask_price {
+        ask_vol
+    } else {
+        ask_vol - prev_ask_vol
+    };
+
+    // OFI = e_b - e_a
+    e_b - e_a
+}

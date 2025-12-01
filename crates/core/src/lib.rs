@@ -12,3 +12,15 @@ pub enum InstrumentType {
     Perpetual,
     Future,
 }
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum OrderSide {
+    Buy,
+    Sell,
+}
+
+#[derive(Debug, Clone)]
+pub struct Order {
+    pub price: Price,
+    pub quantity: Quantity,
+    pub side: OrderSide,
+}

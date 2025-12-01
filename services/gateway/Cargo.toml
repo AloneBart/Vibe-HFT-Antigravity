@@ -6,8 +6,13 @@ edition = "2021"
 [dependencies]
 vibe-hft-core = { path = "../../crates/core" }
 vibe-hft-sbe-messages = { path = "../../crates/sbe_messages" }
+vibe-hft-market-data = { path = "../../crates/market_data" }
+vibe-hft-strategy = { path = "../../crates/strategy" }
 tokio = { version = "1", features = ["full"] }
-tokio-tungstenite = "0.20"
+tokio-tungstenite = { version = "0.20", features = ["native-tls"] }
 futures-util = "0.3"
 anyhow = "1.0"
 crossbeam-channel = "0.5"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+url = "2.5"

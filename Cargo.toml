@@ -5,6 +5,7 @@ members = [
     "crates/market_data",
     "crates/algo",
     "crates/wasm_client",
+    "crates/strategy",
     "services/gateway",
 ]
 resolver = "2"

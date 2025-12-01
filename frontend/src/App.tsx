@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { type CandlestickData, type HistogramData, type Time } from 'lightweight-charts'
 import { TradingChart } from './components/TradingChart'
+import { LiquidationHeatmap } from './components/LiquidationHeatmap'
 import './App.css'
 
 interface MarketUpdate {
@@ -24,8 +25,10 @@ function App() {
   const reconnectTimeoutRef = useRef<number | undefined>(undefined)
   const simulationIntervalRef = useRef<number | undefined>(undefined)
   const isMountedRef = useRef(true)
-  const wasmModuleRef = useRef<any>(null)
+  const workerRef = useRef<Worker | null>(null)
   const lastPriceRef = useRef<number>(50000)
+  const messageBufferRef = useRef<MarketUpdate[]>([])
+  const lastRenderTimeRef = useRef<number>(0)
 
   // CRITIQUE: Ref pour suivre l'état de simulation dans les closures async
   const isSimulatingRef = useRef(isSimulating)
@@ -169,8 +172,8 @@ function App() {
       return
     }
 
-    if (!wasmModuleRef.current) {
-      console.error('WASM module not initialized')
+    if (!workerRef.current) {
+      console.error('Worker not initialized')
       return
     }
 
@@ -199,15 +202,16 @@ function App() {
         if (!isMountedRef.current || isSimulatingRef.current) return
 
         try {
-          const buffer = new Uint8Array(event.data)
-          const { decode_market_data } = wasmModuleRef.current
-          const update = decode_market_data(buffer)
-
-          setMessages(prev => [update as MarketUpdate, ...prev].slice(0, 20))
-          updateChartData(update as MarketUpdate)
+          if (workerRef.current) {
+            // Offload decoding to worker
+            workerRef.current.postMessage({
+              type: 'PROCESS_UPDATE',
+              payload: event.data
+            }, [event.data]) // Transferable
+          }
         } catch (e) {
-          console.error('Error decoding message:', e)
-          setError(`Decode error: ${e}`)
+          console.error('Error posting to worker:', e)
+          setError(`Worker error: ${e}`)
         }
       }
 
@@ -263,29 +267,55 @@ function App() {
 
     const initSystem = async () => {
       try {
-        setStatus('Loading WASM...')
+        setStatus('Loading Worker...')
 
-        try {
-          const wasmModule = await import('vibe-hft-wasm-client')
-          if (!isMountedRef.current) return
+        // Initialize Worker
+        const worker = new Worker(new URL('./workers/marketDataWorker.ts', import.meta.url), {
+          type: 'module'
+        })
 
-          wasmModule.init_client()
-          wasmModuleRef.current = wasmModule
+        worker.onerror = (err) => {
+          console.error("Worker initialization error:", err);
+          setError(`Worker Init Error: ${err.message}`);
+        };
 
-          console.log('✅ WASM client initialized')
-          setChartReady(true)
-          setStatus('WASM Ready')
+        worker.onmessage = (e) => {
+          const { type, payload } = e.data
 
-          // Démarrer la connexion WebSocket seulement si pas en mode simulation
-          if (!isSimulatingRef.current) {
-            connectWebSocket()
+          if (type === 'WASM_READY') {
+            console.log('✅ Worker & WASM initialized')
+            setStatus('WASM Ready')
+            setChartReady(true)
+
+            // Démarrer la connexion WebSocket seulement si pas en mode simulation
+            if (!isSimulatingRef.current) {
+              connectWebSocket()
+            }
+          } else if (type === 'MARKET_UPDATE') {
+            const update = payload as MarketUpdate
+            messageBufferRef.current.push(update)
+
+            // Throttle updates to ~60fps (16ms)
+            const now = performance.now()
+            if (now - lastRenderTimeRef.current > 32) { // 30fps for safety
+              const batch = messageBufferRef.current
+              messageBufferRef.current = []
+              lastRenderTimeRef.current = now
+
+              if (batch.length > 0) {
+                setMessages(prev => [...batch.reverse(), ...prev].slice(0, 50))
+                // Update chart with the last message of the batch (simplified)
+                // Ideally we should aggregate candles
+                batch.forEach(u => updateChartData(u))
+              }
+            }
+          } else if (type === 'ERROR') {
+            console.error('Worker Error:', payload)
+            setError(`Worker: ${payload}`)
           }
-        } catch (wasmError) {
-          console.warn('⚠️ WASM not available, running in simulation-only mode')
-          setChartReady(true)
-          setStatus('WASM Unavailable')
-          setError('WASM module not found. Use Simulation Mode to test the UI.')
         }
+
+        workerRef.current = worker
 
       } catch (e) {
         console.error('Init Error:', e)
@@ -302,6 +332,9 @@ function App() {
       isMountedRef.current = false
       cleanupWebSocket()
       cleanupSimulation()
+      if (workerRef.current) {
+        workerRef.current.terminate()
+      }
     }
   }, [connectWebSocket, cleanupWebSocket, cleanupSimulation])
 
@@ -311,7 +344,7 @@ function App() {
       // Passer en mode simulation : nettoyer le WebSocket
       console.log('🔄 Switching to simulation mode')
       cleanupWebSocket()
-    } else if (wasmModuleRef.current && chartReady) {
+    } else if (workerRef.current && chartReady) {
       // Sortir du mode simulation : reconnecter le WebSocket
       console.log('🔄 Switching to WebSocket mode')
       connectWebSocket()
@@ -354,7 +387,26 @@ function App() {
 
       <main className="main-content">
         {chartReady && (
-          <TradingChart data={candlestickData} volumeData={volumeData} />
+          <div className="col-span-12 lg:col-span-9 grid grid-rows-6 gap-4">
+            {/* Chart Section */}
+            <div className="row-span-4 bg-[#111] border border-[#333] rounded-sm p-4 relative">
+              <div className="absolute top-2 left-4 z-10 flex gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-[#00ff00] font-bold text-xl">BTC/USDT</span>
+                  <span className="text-[#666] text-sm">Binance</span>
+                </div>
+                <div className="flex gap-2">
+                  {['1m', '5m', '15m', '1h', '4h'].map(tf => (
+                    <button key={tf} className="px-2 py-1 text-xs text-[#888] hover:text-[#00ff00] hover:bg-[#222] rounded transition-colors">
+                      {tf}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <TradingChart data={candlestickData} volumeData={volumeData} />
+              <LiquidationHeatmap data={messages.map(m => ({ price: m.price, volume: m.quantity }))} />
+            </div>
+          </div>
         )}
 
         <section className="market-data">
@@ -394,3 +446,4 @@ function App() {
 }
 
 export default App
+

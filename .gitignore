@@ -35,6 +35,7 @@ lerna-debug.log*
 .env
 .env.local
 .env.*.local
+mcp-config.json
 
 # Build artifacts
 build/
